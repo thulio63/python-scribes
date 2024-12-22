@@ -106,14 +106,18 @@ class TerminalScribe:
         self._clearMark()
 
     def drawFunction(self, identity: str):
+        #set boundaries/scope of graph
+        #add boundsx and boundsy to pos 
+        #divide for scope?
+        boundsx = (self.canvas._x / 2)
+        boundsy = (self.canvas._y / 2)
+        bounds = [boundsx, boundsy]
         if identity == "sin":
             self._drawSin()
         elif identity == "cos":
             self._drawCos()
         elif identity == "tan":
             self._drawTan()
-
-        pass
 
     def _drawSin():
         pass
@@ -196,15 +200,17 @@ class TerminalScribe:
             case "form" | "formula":
                 func = "formula" 
                 #asks for ident to use
+                #needs more work to prevent breaking with bad inputs etc.
+                #ask for what to take func of in future? assign input to some x variable
                 while True:
                     formula = input(f"Which of the trigonometric identities should {name} graph?\n")
-                    if formula.lower() == "sin":
+                    if formula.lower() == "sin" or "sine":
                         newScribe["Calc"] = "sin"
                         break
-                    elif formula.lower() == "cos":
+                    elif formula.lower() == "cos" or "cosine":
                         newScribe["Calc"] = "cos"
                         break
-                    elif formula.lower() == "tan":
+                    elif formula.lower() == "tan" or "tangent":
                         newScribe["Calc"] = "tan"
                         break
                     else: continue
@@ -301,16 +307,16 @@ myCanvas = Canvas(20, 20)
 #                     summoned.drawLine(size, angle, startPos)
 """
 
-TerminalScribe.createScribe("billy", "line", 24, 70)
-TerminalScribe.createScribe("frank", "line", 15, 30)
-# TerminalScribe.createScribe("sam", "line", 2, 180)
-TerminalScribe.createScribe("jack", "square", 8)
-TerminalScribe.createScribe("sinx", "form")
+#TerminalScribe.createScribe("billy", "line", 24, 70)
+#TerminalScribe.createScribe("frank", "line", 15, 30)
+#TerminalScribe.createScribe("sam", "line", 2, 180)
+#TerminalScribe.createScribe("jack", "square", 8)
+TerminalScribe.createScribe("phil", "form")
 
 # TerminalScribe.summonScribe("billy")
 # TerminalScribe.summonScribe("frank")
 # TerminalScribe.summonScribe("sam")
-TerminalScribe.summonScribe("jack")
+# TerminalScribe.summonScribe("jack")
 
 # for i in scribesList:
 #     TerminalScribe.summonScribe(i["Name"])
