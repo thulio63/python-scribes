@@ -106,12 +106,7 @@ class TerminalScribe:
         self._clearMark()
 
     def drawFunction(self, identity: str):
-        #set boundaries/scope of graph
-        #add boundsx and boundsy to pos 
-        #divide for scope?
-        boundsx = (self.canvas._x / 2)
-        boundsy = (self.canvas._y / 2)
-        bounds = [boundsx, boundsy]
+        self.pos = [0, int(self.canvas._y / 2)]
         if identity == "sin":
             self._drawSin()
         elif identity == "cos":
@@ -119,14 +114,43 @@ class TerminalScribe:
         elif identity == "tan":
             self._drawTan()
 
-    def _drawSin():
-        pass
+    def _drawSin(self):
+        self.canvas.setPos(self.pos, self.mark)
+        yVar = int(self.canvas._y / 2)
+        for i in range(self.canvas._x):
+            self.canvas.setPos(self.pos, self.trail)        
+            self.pos = [i, math.sin(i) * (yVar / math.pi) + yVar]
+            self.canvas.setPos(self.pos, self.mark) 
+            self.canvas.print()
+            time.sleep(self.framerate)
+        self._clearMark()
 
-    def _drawCos():
-        pass
+    def _drawCos(self):
+        self.canvas.setPos(self.pos, self.mark)
+        yVar = int(self.canvas._y / 2)
+        for i in range(self.canvas._x):
+            self.canvas.setPos(self.pos, self.trail)        
+            self.pos = [i, math.cos(i) * (yVar / math.pi) + yVar]
+            self.canvas.setPos(self.pos, self.mark) 
+            self.canvas.print()
+            time.sleep(self.framerate)
+        self._clearMark()
 
-    def _drawTan():
-        pass
+    def _drawTan(self):
+        self.canvas.setPos(self.pos, self.mark)
+        yVar = int(self.canvas._y / 2)
+        for i in range(self.canvas._x):
+            self.canvas.setPos(self.pos, self.trail)
+            self.pos = [i, math.tan(i) * (yVar / math.pi) + yVar]
+            if self.pos[1] > self.canvas._y:
+                self.pos[1] = self.canvas._y - 1
+            if self.pos[1] < 0:
+                self.pos[1] = 0
+            self.canvas.setPos(self.pos, self.mark) 
+            self.canvas.print()
+            time.sleep(self.framerate)
+        self._clearMark()
+
 
     def _bonk(self, pos: list):
         """Makes the scribe bounce off of walls.""" 
@@ -198,28 +222,36 @@ class TerminalScribe:
                             newScribe["Size"] = newSize
                             break
             case "form" | "formula":
+                formList = ["sin", "sine", "cos", "cosine", "tan", "tangent"]
                 func = "formula" 
                 #asks for ident to use
-                #needs more work to prevent breaking with bad inputs etc.
+                formula = input(f"Which of the trigonometric identities should {name} graph?\n").lower()
                 #ask for what to take func of in future? assign input to some x variable
-                while True:
-                    formula = input(f"Which of the trigonometric identities should {name} graph?\n")
-                    if formula.lower() == "sin" or "sine":
-                        newScribe["Calc"] = "sin"
-                        break
-                    elif formula.lower() == "cos" or "cosine":
-                        newScribe["Calc"] = "cos"
-                        break
-                    elif formula.lower() == "tan" or "tangent":
-                        newScribe["Calc"] = "tan"
-                        break
-                    else: continue
-
+                if formula.lower() not in formList:
+                    while True:
+                        try:
+                            newFormula = input(f"That is not a valid identity. Please enter a valid identity:\n").lower()
+                        except ValueError:
+                            continue
+                        if newFormula not in formList:
+                            continue
+                        else: 
+                            formula = newFormula
+                            break
+                if formula == "sin" or formula == "sine":
+                    newScribe["Calc"] = "sin"
+                    #yummy = input(f"{name} will print a sin graph") testing
+                elif formula == "cos" or formula == "cosine":
+                    newScribe["Calc"] = "cos"
+                    #yummy = input(f"{name} will print a cos graph") testing
+                elif formula == "tan" or formula == "tangent":
+                    newScribe["Calc"] = "tan"
+                    #yummy = input(f"{name} will print a tan graph") testing                    
             case _:
                 #asks for apology if shape is invalid
                 while True:
                     data = input(f"{name} will not draw this filth! Apologize!\n")                    
-                    if data.lower() != "sorry" or "srry":
+                    if data.lower() != "sorry" or "sry":
                         continue
                     else: #kills self if you apologize, lol
                         os._exit(1) #figure this out later, maybe just a vscode thing
@@ -262,7 +294,7 @@ class TerminalScribe:
 #Not sure how to bundle these with the module. Will give thought.
 scribesList = []
 shapes = "line", "square", "formula"
-myCanvas = Canvas(20, 20)
+myCanvas = Canvas(50, 50)
 
 
 """ 
@@ -317,6 +349,7 @@ TerminalScribe.createScribe("phil", "form")
 # TerminalScribe.summonScribe("frank")
 # TerminalScribe.summonScribe("sam")
 # TerminalScribe.summonScribe("jack")
+TerminalScribe.summonScribe("phil")
 
 # for i in scribesList:
 #     TerminalScribe.summonScribe(i["Name"])
