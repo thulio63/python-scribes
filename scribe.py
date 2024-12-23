@@ -72,87 +72,9 @@ class TerminalScribe:
         self.willBonk = True
         #myCanvas.clear()
 
+        self.name = ""
         self.mark = '*'
-        self.trail = '.'
-
-    def drawLine(self, size: int, angle: int, currentPos):        
-        self.pos = currentPos #chains lines together
-        
-        self.canvas.setPos(self.pos, self.mark) 
-        self._face(angle)
-        self._forward(size)
-
-        _logEndPos(self.pos)
-        self._clearMark()        
-
-    # def drawSquare(self, size: int, currentPos: list= [0,0]):
-    #     #for rectangles (self, width: int, height: int) swap "size" with width and height
-    #     if currentPos == [0, 0]:
-    #         self.pos = [(int((self.canvas._x - size) / 2)), (int((self.canvas._y - size) / 2))]
-    #     else:
-    #         self.pos = currentPos
-    #     self.canvas.setPos(self.pos, self.mark) 
-
-    #     self._right(size-1)
-    #     #changes direction before resuming
-    #     self._face(180)    
-    #     self._forward(size - 1) #height for rect 
-    #     #changes direction before resuming
-    #     self._face(270)
-    #     self._forward(size-1) #width for rect
-    #     #changes direction before resuming
-    #     self._face(0)
-    #     self._forward(size-1) #height for rect 
-
-    #     _logEndPos(self.pos)
-    #     self._clearMark()
-
-    # def drawFunction(self, identity: str):
-    #     self.pos = [0, int(self.canvas._y / 2)]
-    #     if identity == "sin":
-    #         self._drawSin()
-    #     elif identity == "cos":
-    #         self._drawCos()
-    #     elif identity == "tan":
-    #         self._drawTan()
-
-    # def _drawSin(self):
-    #     self.canvas.setPos(self.pos, self.mark)
-    #     yVar = int(self.canvas._y / 2)
-    #     for i in range(self.canvas._x):
-    #         self.canvas.setPos(self.pos, self.trail)        
-    #         self.pos = [i, math.sin(i) * (yVar / math.pi) + yVar]
-    #         self.canvas.setPos(self.pos, self.mark) 
-    #         self.canvas.print()
-    #         time.sleep(self.framerate)
-    #     self._clearMark()
-
-    # def _drawCos(self):
-    #     self.canvas.setPos(self.pos, self.mark)
-    #     yVar = int(self.canvas._y / 2)
-    #     for i in range(self.canvas._x):
-    #         self.canvas.setPos(self.pos, self.trail)        
-    #         self.pos = [i, math.cos(i) * (yVar / math.pi) + yVar]
-    #         self.canvas.setPos(self.pos, self.mark) 
-    #         self.canvas.print()
-    #         time.sleep(self.framerate)
-    #     self._clearMark()
-
-    # def _drawTan(self):
-    #     self.canvas.setPos(self.pos, self.mark)
-    #     yVar = int(self.canvas._y / 2)
-    #     for i in range(self.canvas._x):
-    #         self.canvas.setPos(self.pos, self.trail)
-    #         self.pos = [i, math.tan(i) * (yVar / math.pi) + yVar]
-    #         if self.pos[1] > self.canvas._y:
-    #             self.pos[1] = self.canvas._y - 1
-    #         if self.pos[1] < 0:
-    #             self.pos[1] = 0
-    #         self.canvas.setPos(self.pos, self.mark) 
-    #         self.canvas.print()
-    #         time.sleep(self.framerate)
-    #     self._clearMark()
-
+        self.trail = '.'      
 
     def _bonk(self, pos: list):
         """Makes the scribe bounce off of walls.""" 
@@ -180,24 +102,6 @@ class TerminalScribe:
             self.canvas.setPos(self.pos, self.mark)
             self.canvas.print()
             time.sleep(self.framerate)
-
-    # def _right(self, spaces):
-    #     self._face(90) 
-    #     self._forward(spaces) #width for rect
-
-    # def _down(self, spaces):
-    #     self._face = 180
-    #     self._forward(spaces)
-
-    # def _left(self, spaces):
-    #     self._face = 270
-    #     self._forward(spaces)
-
-    # def _up(self, spaces):
-    #     self._face = 360
-    #     self._forward(spaces)
-
-    
 
     def _clearMark(self):
         self.canvas.setPos(self.pos, self.trail)
@@ -265,6 +169,7 @@ class TerminalScribe:
             if newScribe["Name"] == i["Name"]:
                 #maybe undo this to allow for auto-naming?
                 return print("There is already a scribe with this name!") 
+        
         TerminalScribe.scribesList.append(newScribe)
 
     def summonScribe(name: str):
@@ -293,19 +198,16 @@ class TerminalScribe:
                         purpose = i["Calc"]
                         summoned.drawFunction(purpose)
 
-#Not sure how to bundle these with the module. Will give thought.
-
-myCanvas = Canvas(50, 50) #make input
-
 class LineScribe(TerminalScribe):
-    def __init__(self, name: str, length: int, angle: int, currentPos: list):
+    def __init__(self, name: str, length: int, angle: int, currentPos: list = [0,0]):
         super().__init__(myCanvas)
+        self.name = name
         self.length = length
         self.angle = angle
         self.currentPos = currentPos
         
 
-    def drawLine(self, size: int, angle: int, currentPos):        
+    def draw(self, size: int, angle: int, currentPos):        
         self.pos = currentPos #chains lines together
         
         self.canvas.setPos(self.pos, self.mark) 
@@ -333,7 +235,7 @@ class SquareScribe(TerminalScribe):
         self._face = 360
         self._forward(spaces)
     
-    def drawSquare(self, size: int, currentPos: list= [0,0]):
+    def draw(self, size: int, currentPos: list= [0,0]):
         #for rectangles (self, width: int, height: int) swap "size" with width and height
         if currentPos == [0, 0]:
             self.pos = [(int((self.canvas._x - size) / 2)), (int((self.canvas._y - size) / 2))]
@@ -354,9 +256,13 @@ class SquareScribe(TerminalScribe):
 
         _logEndPos(self.pos)
         self._clearMark()
+
+    """In interactive mode, user creates scribe. new <name> SquareScribe 
+    object is created. On order to run, code <name>.draw(*args)"""
+
     
 class FunctionScribe(TerminalScribe):
-    def drawFunction(self, identity: str):
+    def draw(self, identity: str):
         self.pos = [0, int(self.canvas._y / 2)]
         if identity == "sin":
             self._drawSin()
@@ -402,18 +308,51 @@ class FunctionScribe(TerminalScribe):
             time.sleep(self.framerate)
         self._clearMark()
 
-#TerminalScribe.createScribe("billy", "line", 24, 70)
-#TerminalScribe.createScribe("frank", "line", 15, 30)
-#TerminalScribe.createScribe("sam", "line", 2, 180)
-#TerminalScribe.createScribe("jack", "square", 8)
-TerminalScribe.createScribe("phil", "func")
+creating = True
+#begins program with user input
 
-# TerminalScribe.summonScribe("billy")
-# TerminalScribe.summonScribe("frank")
-# TerminalScribe.summonScribe("sam")
-# TerminalScribe.summonScribe("jack")
-TerminalScribe.summonScribe("phil")
+#make canvas first!
+myCanvas = Canvas(50, 50) #make input
 
-# for i in scribesList:
-#     TerminalScribe.summonScribe(i["Name"])
+while creating:
+    scribeName = input("What would you like to name this scribe?\n")
+    #code here to make sure input is string/not already used
+
+    scribeType = input(f"What would you like {scribeName} to draw? \nFor now, choose between a line, a square, or a function.\n").lower()
+    #code to make sure input is valid - check TerminalScribe shapes
+
+    if scribeType == "line":
+        lineLen = int(input(f"How long should {scribeName} be?"))
+        #code to ensure valid answer, convert string to int, whatever
+        
+        lineAng = int(input(f"What angle (in degrees) is {scribeName}?"))
+        #code to ensure valid input, convert string to int
+
+        scribe = LineScribe(scribeName, lineLen, lineAng)
+        TerminalScribe.scribesList.append(scribe)
+        #scribe is added to list
+        #prompt to make more, or move to execution
+        buildMore = input("Would you like to make more scribes?")
+        if buildMore == "n":
+            break
+        else: continue
+    elif scribeType == "square": 
+        pass
+    else: continue
+    break #breaks when an if statement breaks - maybe not necessary?
+
+#once all scribes are created, run specified scribe/other functions to be added (list them, run multiple, whatever)
+commandName = input("Which scribe would you like to summon?")
+while True:
+    
+    for i in TerminalScribe.scribesList:
+        if i.name == commandName:
+            i.draw(i.length, i.angle, i.currentPos)
+        prompt = input("Would you like to summpon another scribe, create a new scribe, or quit?\n")
+        #switch case here to do next thing based on user input
+
+    else: 
+        commandName = input("There is no scribe with such a name. Please name an existing scribe:\n")
+        continue
+
 print(Canvas.checkSpots)
