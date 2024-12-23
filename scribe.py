@@ -59,6 +59,8 @@ def _logEndPos(pos: list): #makes scribes follow from previous scribes
 class TerminalScribe:
 
     fresh = True
+    scribesList = []
+    shapes = "line", "square", "formula"
 
     def __init__(self, canvas: Canvas):
         self.canvas = canvas
@@ -195,6 +197,8 @@ class TerminalScribe:
     #     self._face = 360
     #     self._forward(spaces)
 
+    
+
     def _clearMark(self):
         self.canvas.setPos(self.pos, self.trail)
         self.canvas.print()
@@ -257,11 +261,11 @@ class TerminalScribe:
         
         if angle:
             newScribe["Angle"] = angle
-        for i in scribesList:
+        for i in TerminalScribe.scribesList:
             if newScribe["Name"] == i["Name"]:
                 #maybe undo this to allow for auto-naming?
                 return print("There is already a scribe with this name!") 
-        scribesList.append(newScribe)
+        TerminalScribe.scribesList.append(newScribe)
 
     def summonScribe(name: str):
         """Tells specified scribe to make its shape."""
@@ -274,7 +278,7 @@ class TerminalScribe:
             TerminalScribe.fresh = False
         size = 1
         angle = 90
-        for i in scribesList: #sends scribes to work depending on name and function
+        for i in TerminalScribe.scribesList: #sends scribes to work depending on name and function
             if i["Name"] == name:
                 match i["Function"]:
                     case "square":
@@ -284,16 +288,23 @@ class TerminalScribe:
                         size = i["Size"]
                         angle = i["Angle"]                    
                         summoned.drawLine(size, angle, startPos)
+
                     case "formula":
                         purpose = i["Calc"]
                         summoned.drawFunction(purpose)
 
 #Not sure how to bundle these with the module. Will give thought.
-scribesList = []
-shapes = "line", "square", "formula"
-myCanvas = Canvas(50, 50)
+
+myCanvas = Canvas(50, 50) #make input
 
 class LineScribe(TerminalScribe):
+    def __init__(self, name: str, length: int, angle: int, currentPos: list):
+        super().__init__(myCanvas)
+        self.length = length
+        self.angle = angle
+        self.currentPos = currentPos
+        
+
     def drawLine(self, size: int, angle: int, currentPos):        
         self.pos = currentPos #chains lines together
         
