@@ -50,6 +50,10 @@ class Canvas():
             print([' '.join([col[y] for col in self._canvas])])
             #add [] inside print() for visible border
         
+class Format:
+    end = '\033[0m'
+    underline = '\033[4m'
+
 endingPos = [0,0]
 
 def _logEndPos(pos: list): #makes scribes follow from previous scribes
@@ -60,7 +64,7 @@ class TerminalScribe:
 
     fresh = True
     scribesList = []
-    shapes = "line", "square", "formula"
+    shapes = "line", "square", "function", "ln", "sq", "func"
 
     def __init__(self, canvas: Canvas):
         self.canvas = canvas
@@ -314,45 +318,119 @@ creating = True
 #make canvas first!
 myCanvas = Canvas(50, 50) #make input
 
+#greeting
+print("Welcome! Let's make some scribes together :)")
 while creating:
-    scribeName = input("What would you like to name this scribe?\n")
-    #code here to make sure input is string/not already used
+    if len(TerminalScribe.scribesList) == 0:
+        scribeName = input("\nWhat would you like to name your first scribe?\n")
+    else: scribeName = input("\nWhat would you like to name this scribe?\n")
+    naming = True
+    while naming:
+        if len(TerminalScribe.scribesList) == 0:
+            naming = False
+        for i in TerminalScribe.scribesList:
+            #add .lower() after both to ignore cases in name matching
+            if i.name == scribeName:
+                #if this name has already been added
+                scribeName = input("\nThere is already a scribe with this name! Choose another:")
+                continue
+            else: 
+                naming = False
 
-    scribeType = input(f"What would you like {scribeName} to draw? \nFor now, choose between a line, a square, or a function.\n").lower()
-    #code to make sure input is valid - check TerminalScribe shapes
+    scribeType = input(f"\nWhat would you like {scribeName} to draw? \nFor now, choose between a line, a square, or a function.\n").lower()
+    shaping = True
+    while shaping:
+        if scribeType not in TerminalScribe.shapes:
+            scribeType = input("\nThat is not a valid shape; please choose one of the listed options.\n")
+            continue
+ 
+        else: 
+            shaping = False
 
-    if scribeType == "line":
-        lineLen = int(input(f"How long should {scribeName} be?"))
-        #code to ensure valid answer, convert string to int, whatever
-        
-        lineAng = int(input(f"What angle (in degrees) is {scribeName}?"))
-        #code to ensure valid input, convert string to int
+    match scribeType:
+        case "line" | "ln":
+            scribeType = "line"
+            #ensure length is an int above 0
+            while True:
+                try:
+                    lineLen = int(input(f"\nHow long should {scribeName} be?\t"))
+                except Exception:
+                    print("\nThat is not a valid length; please ensure your answer is an int.")
+                    continue
+                
+                if lineLen < 1:
+                    print("Your answer cannot be smaller than 1.\n")
+                    continue
+                else: break
+            #dictates angle of line
+            while True:
+                try:
+                    lineAng = int(input(f"What angle (in degrees) should {scribeName} be?\t"))
+                except Exception:
+                    print("\nThat is not a valid angle; please ensure your answer is an int.\n")
+                    continue
+                break
+            
+            #scribe is created and added to master list
+            scribe = LineScribe(scribeName, lineLen, lineAng)
+            TerminalScribe.scribesList.append(scribe)
 
-        scribe = LineScribe(scribeName, lineLen, lineAng)
-        TerminalScribe.scribesList.append(scribe)
-        #scribe is added to list
-        #prompt to make more, or move to execution
-        buildMore = input("Would you like to make more scribes?")
-        if buildMore == "n":
-            break
-        else: continue
-    elif scribeType == "square": 
-        pass
-    else: continue
-    break #breaks when an if statement breaks - maybe not necessary?
+            buildMore = input(f"\nYou have created a scribe named {scribeName} that will draw a {lineAng} degree {scribeType}. Would you like to make more scribes?\n\t").lower()
+            #asks to continue, catches anything but yes or no
+            ansBuild = True
+            while ansBuild:
+                match buildMore:
+                    case "y" | "yes":
+                        ansBuild = False
+                        break
+                    case "n" | "no":
+                        ansBuild = False
+                        creating = False
+                        break
+                    case _:
+                        buildMore = input("Please answer yes or no:\n\t").lower()
+                        continue
+
+        case "square" | "sq":
+            pass
+        case "function" | "func":
+            pass
+        case _:
+            pass
+        #fill out with drawing different shapes
+    
+    
 
 #once all scribes are created, run specified scribe/other functions to be added (list them, run multiple, whatever)
-commandName = input("Which scribe would you like to summon?")
-while True:
-    
+drawing = True
+commandName = input("\nWhich scribe would you like to summon?\t")
+while drawing: 
     for i in TerminalScribe.scribesList:
         if i.name == commandName:
             i.draw(i.length, i.angle, i.currentPos)
-        prompt = input("Would you like to summpon another scribe, create a new scribe, or quit?\n")
-        #switch case here to do next thing based on user input
+            drawing = False           
+        else: 
+            commandName = input("\nThere is no scribe with such a name. Please name an existing scribe:\t")
+            continue
+prompt = input(f"Would you like to {Format.underline}summon{Format.end} another scribe, {Format.underline}create{Format.end} a new scribe, or {Format.underline}quit{Format.end}?\n").lower()
+choosing = True
+while choosing:
+    match prompt:
+        case "summon" | "s":
+            choosing = False
+            pass
+        case "create" | "c":
+            choosing = False
+            pass
+        case "quit" | "q":
+            choosing = False
+            print("yayayayAYAYAYAYAY YOU'RE FREE!!!!!")
+            break
+        case _:
+            prompt = input(f"That is not a valid response. You can {Format.underline}summon{Format.end}, {Format.underline}create{Format.end}, or {Format.underline}quit{Format.end}.\n").lower()
+            continue
+    #fill match case to redirect
 
-    else: 
-        commandName = input("There is no scribe with such a name. Please name an existing scribe:\n")
-        continue
+    
 
 print(Canvas.checkSpots)
