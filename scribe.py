@@ -83,73 +83,73 @@ class TerminalScribe:
         _logEndPos(self.pos)
         self._clearMark()        
 
-    def drawSquare(self, size: int, currentPos: list= [0,0]):
-        #for rectangles (self, width: int, height: int) swap "size" with width and height
-        if currentPos == [0, 0]:
-            self.pos = [(int((self.canvas._x - size) / 2)), (int((self.canvas._y - size) / 2))]
-        else:
-            self.pos = currentPos
-        self.canvas.setPos(self.pos, self.mark) 
+    # def drawSquare(self, size: int, currentPos: list= [0,0]):
+    #     #for rectangles (self, width: int, height: int) swap "size" with width and height
+    #     if currentPos == [0, 0]:
+    #         self.pos = [(int((self.canvas._x - size) / 2)), (int((self.canvas._y - size) / 2))]
+    #     else:
+    #         self.pos = currentPos
+    #     self.canvas.setPos(self.pos, self.mark) 
 
-        self._right(size-1)
-        #changes direction before resuming
-        self._face(180)    
-        self._forward(size - 1) #height for rect 
-        #changes direction before resuming
-        self._face(270)
-        self._forward(size-1) #width for rect
-        #changes direction before resuming
-        self._face(0)
-        self._forward(size-1) #height for rect 
+    #     self._right(size-1)
+    #     #changes direction before resuming
+    #     self._face(180)    
+    #     self._forward(size - 1) #height for rect 
+    #     #changes direction before resuming
+    #     self._face(270)
+    #     self._forward(size-1) #width for rect
+    #     #changes direction before resuming
+    #     self._face(0)
+    #     self._forward(size-1) #height for rect 
 
-        _logEndPos(self.pos)
-        self._clearMark()
+    #     _logEndPos(self.pos)
+    #     self._clearMark()
 
-    def drawFunction(self, identity: str):
-        self.pos = [0, int(self.canvas._y / 2)]
-        if identity == "sin":
-            self._drawSin()
-        elif identity == "cos":
-            self._drawCos()
-        elif identity == "tan":
-            self._drawTan()
+    # def drawFunction(self, identity: str):
+    #     self.pos = [0, int(self.canvas._y / 2)]
+    #     if identity == "sin":
+    #         self._drawSin()
+    #     elif identity == "cos":
+    #         self._drawCos()
+    #     elif identity == "tan":
+    #         self._drawTan()
 
-    def _drawSin(self):
-        self.canvas.setPos(self.pos, self.mark)
-        yVar = int(self.canvas._y / 2)
-        for i in range(self.canvas._x):
-            self.canvas.setPos(self.pos, self.trail)        
-            self.pos = [i, math.sin(i) * (yVar / math.pi) + yVar]
-            self.canvas.setPos(self.pos, self.mark) 
-            self.canvas.print()
-            time.sleep(self.framerate)
-        self._clearMark()
+    # def _drawSin(self):
+    #     self.canvas.setPos(self.pos, self.mark)
+    #     yVar = int(self.canvas._y / 2)
+    #     for i in range(self.canvas._x):
+    #         self.canvas.setPos(self.pos, self.trail)        
+    #         self.pos = [i, math.sin(i) * (yVar / math.pi) + yVar]
+    #         self.canvas.setPos(self.pos, self.mark) 
+    #         self.canvas.print()
+    #         time.sleep(self.framerate)
+    #     self._clearMark()
 
-    def _drawCos(self):
-        self.canvas.setPos(self.pos, self.mark)
-        yVar = int(self.canvas._y / 2)
-        for i in range(self.canvas._x):
-            self.canvas.setPos(self.pos, self.trail)        
-            self.pos = [i, math.cos(i) * (yVar / math.pi) + yVar]
-            self.canvas.setPos(self.pos, self.mark) 
-            self.canvas.print()
-            time.sleep(self.framerate)
-        self._clearMark()
+    # def _drawCos(self):
+    #     self.canvas.setPos(self.pos, self.mark)
+    #     yVar = int(self.canvas._y / 2)
+    #     for i in range(self.canvas._x):
+    #         self.canvas.setPos(self.pos, self.trail)        
+    #         self.pos = [i, math.cos(i) * (yVar / math.pi) + yVar]
+    #         self.canvas.setPos(self.pos, self.mark) 
+    #         self.canvas.print()
+    #         time.sleep(self.framerate)
+    #     self._clearMark()
 
-    def _drawTan(self):
-        self.canvas.setPos(self.pos, self.mark)
-        yVar = int(self.canvas._y / 2)
-        for i in range(self.canvas._x):
-            self.canvas.setPos(self.pos, self.trail)
-            self.pos = [i, math.tan(i) * (yVar / math.pi) + yVar]
-            if self.pos[1] > self.canvas._y:
-                self.pos[1] = self.canvas._y - 1
-            if self.pos[1] < 0:
-                self.pos[1] = 0
-            self.canvas.setPos(self.pos, self.mark) 
-            self.canvas.print()
-            time.sleep(self.framerate)
-        self._clearMark()
+    # def _drawTan(self):
+    #     self.canvas.setPos(self.pos, self.mark)
+    #     yVar = int(self.canvas._y / 2)
+    #     for i in range(self.canvas._x):
+    #         self.canvas.setPos(self.pos, self.trail)
+    #         self.pos = [i, math.tan(i) * (yVar / math.pi) + yVar]
+    #         if self.pos[1] > self.canvas._y:
+    #             self.pos[1] = self.canvas._y - 1
+    #         if self.pos[1] < 0:
+    #             self.pos[1] = 0
+    #         self.canvas.setPos(self.pos, self.mark) 
+    #         self.canvas.print()
+    #         time.sleep(self.framerate)
+    #     self._clearMark()
 
 
     def _bonk(self, pos: list):
@@ -179,21 +179,21 @@ class TerminalScribe:
             self.canvas.print()
             time.sleep(self.framerate)
 
-    def _right(self, spaces):
-        self._face(90) 
-        self._forward(spaces) #width for rect
+    # def _right(self, spaces):
+    #     self._face(90) 
+    #     self._forward(spaces) #width for rect
 
-    def _down(self, spaces):
-        self._face = 180
-        self._forward(spaces)
+    # def _down(self, spaces):
+    #     self._face = 180
+    #     self._forward(spaces)
 
-    def _left(self, spaces):
-        self._face = 270
-        self._forward(spaces)
+    # def _left(self, spaces):
+    #     self._face = 270
+    #     self._forward(spaces)
 
-    def _up(self, spaces):
-        self._face = 360
-        self._forward(spaces)
+    # def _up(self, spaces):
+    #     self._face = 360
+    #     self._forward(spaces)
 
     def _clearMark(self):
         self.canvas.setPos(self.pos, self.trail)
@@ -209,11 +209,11 @@ class TerminalScribe:
                 func = "line"
             case "square":
                 func = "square"
-                #checks size to see if it fits/is an int
+                #checks size to see if it fits the canvas/is an int
                 if type(size) != int or size < 1 or size > myCanvas._x:
                     while True:
                         try:
-                            newSize = int(input(f"{name}'s size is invalid. Please provide a new size:\n"))
+                            newSize = int(input(f"{name}'s size is invalid. Please provide a valid size:\n"))
                         except ValueError:
                             continue
                         if newSize < 1 or newSize > myCanvas._x:
@@ -221,7 +221,7 @@ class TerminalScribe:
                         else:
                             newScribe["Size"] = newSize
                             break
-            case "form" | "formula":
+            case "func" | "function":
                 formList = ["sin", "sine", "cos", "cosine", "tan", "tangent"]
                 func = "formula" 
                 #asks for ident to use
@@ -231,7 +231,7 @@ class TerminalScribe:
                     while True:
                         try:
                             newFormula = input(f"That is not a valid identity. Please enter a valid identity:\n").lower()
-                        except ValueError:
+                        except Exception:
                             continue
                         if newFormula not in formList:
                             continue
@@ -239,14 +239,11 @@ class TerminalScribe:
                             formula = newFormula
                             break
                 if formula == "sin" or formula == "sine":
-                    newScribe["Calc"] = "sin"
-                    #yummy = input(f"{name} will print a sin graph") testing
+                    newScribe["Calc"] = "sin" #will make sin graph
                 elif formula == "cos" or formula == "cosine":
-                    newScribe["Calc"] = "cos"
-                    #yummy = input(f"{name} will print a cos graph") testing
+                    newScribe["Calc"] = "cos" #will make cos graph
                 elif formula == "tan" or formula == "tangent":
-                    newScribe["Calc"] = "tan"
-                    #yummy = input(f"{name} will print a tan graph") testing                    
+                    newScribe["Calc"] = "tan" #will make tan graph               
             case _:
                 #asks for apology if shape is invalid
                 while True:
@@ -296,54 +293,109 @@ scribesList = []
 shapes = "line", "square", "formula"
 myCanvas = Canvas(50, 50)
 
+class LineScribe(TerminalScribe):
+    def drawLine(self, size: int, angle: int, currentPos):        
+        self.pos = currentPos #chains lines together
+        
+        self.canvas.setPos(self.pos, self.mark) 
+        self._face(angle)
+        self._forward(size)
 
-""" 
-# def createScribe(name: str, shape: str, size: int, angle: int = 90): 
-#     Adding a scribe to a list of dictionaries.
-#     if angle == 0:
-#         angle = 360
-#     match shape.lower():
-#         case "line":
-#             func = "line"
-#         case "square":
-#             func = "square"
-#         case "rect" | "rectangle":
-#             func = "square"
-#         case _:
-#             return print("This is not an accepted shape!")
+        _logEndPos(self.pos)
+        self._clearMark()    
+
+class SquareScribe(TerminalScribe):
+
+    def _right(self, spaces):
+        self._face(90) 
+        self._forward(spaces) #width for rect
+
+    def _down(self, spaces):
+        self._face = 180
+        self._forward(spaces)
+
+    def _left(self, spaces):
+        self._face = 270
+        self._forward(spaces)
+
+    def _up(self, spaces):
+        self._face = 360
+        self._forward(spaces)
     
-#     newScribe = {"Name":name, "Size":size, "Function":func}
-#     if angle:
-#         newScribe["Angle"] = angle
-#     for i in scribesList:
-#         if newScribe["Name"] == i["Name"]:
-#             return print("There is already a scribe with this name!")
-#     scribesList.append(newScribe)
+    def drawSquare(self, size: int, currentPos: list= [0,0]):
+        #for rectangles (self, width: int, height: int) swap "size" with width and height
+        if currentPos == [0, 0]:
+            self.pos = [(int((self.canvas._x - size) / 2)), (int((self.canvas._y - size) / 2))]
+        else:
+            self.pos = currentPos
+        self.canvas.setPos(self.pos, self.mark) 
 
-# def summonScribe(name: str):
-#     Tells specified scribe to make its shape.
-#     #return print(scribesList)
-#     startPos = endingPos
-#     summoned = TerminalScribe(myCanvas) #edit into prev to choose canvas size
-#     size = 1
-#     angle = 90
-#     for i in scribesList:
-#         if i["Name"] == name:
-#             match i["Function"]:
-#                 case "square":
-#                     size = i["Size"]
-#                     summoned.drawSquare(size, startPos)
-#                 case "line":
-#                     size = i["Size"]
-#                     angle = i["Angle"]                    
-#                     summoned.drawLine(size, angle, startPos)
-"""
+        self._right(size-1)
+        #changes direction before resuming
+        self._face(180)    
+        self._forward(size - 1) #height for rect 
+        #changes direction before resuming
+        self._face(270)
+        self._forward(size-1) #width for rect
+        #changes direction before resuming
+        self._face(0)
+        self._forward(size-1) #height for rect 
+
+        _logEndPos(self.pos)
+        self._clearMark()
+    
+class FunctionScribe(TerminalScribe):
+    def drawFunction(self, identity: str):
+        self.pos = [0, int(self.canvas._y / 2)]
+        if identity == "sin":
+            self._drawSin()
+        elif identity == "cos":
+            self._drawCos()
+        elif identity == "tan":
+            self._drawTan()
+
+    def _drawSin(self):
+        self.canvas.setPos(self.pos, self.mark)
+        yVar = int(self.canvas._y / 2)
+        for i in range(self.canvas._x):
+            self.canvas.setPos(self.pos, self.trail)        
+            self.pos = [i, math.sin(i) * (yVar / math.pi) + yVar]
+            self.canvas.setPos(self.pos, self.mark) 
+            self.canvas.print()
+            time.sleep(self.framerate)
+        self._clearMark()
+
+    def _drawCos(self):
+        self.canvas.setPos(self.pos, self.mark)
+        yVar = int(self.canvas._y / 2)
+        for i in range(self.canvas._x):
+            self.canvas.setPos(self.pos, self.trail)        
+            self.pos = [i, math.cos(i) * (yVar / math.pi) + yVar]
+            self.canvas.setPos(self.pos, self.mark) 
+            self.canvas.print()
+            time.sleep(self.framerate)
+        self._clearMark()
+
+    def _drawTan(self):
+        self.canvas.setPos(self.pos, self.mark)
+        yVar = int(self.canvas._y / 2)
+        for i in range(self.canvas._x):
+            self.canvas.setPos(self.pos, self.trail)
+            self.pos = [i, math.tan(i) * (yVar / math.pi) + yVar]
+            if self.pos[1] > self.canvas._y:
+                self.pos[1] = self.canvas._y - 1
+            if self.pos[1] < 0:
+                self.pos[1] = 0
+            self.canvas.setPos(self.pos, self.mark) 
+            self.canvas.print()
+            time.sleep(self.framerate)
+        self._clearMark()
 
 #TerminalScribe.createScribe("billy", "line", 24, 70)
 #TerminalScribe.createScribe("frank", "line", 15, 30)
 #TerminalScribe.createScribe("sam", "line", 2, 180)
 #TerminalScribe.createScribe("jack", "square", 8)
-TerminalScribe.createScribe("phil", "form")
+TerminalScribe.createScribe("phil", "func")
 
 # TerminalScribe.summonScribe("billy")
 # TerminalScribe.summonScribe("frank")
