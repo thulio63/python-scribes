@@ -231,7 +231,7 @@ class TerminalScribe:
                     while True:
                         try:
                             newFormula = input(f"That is not a valid identity. Please enter a valid identity:\n").lower()
-                        except ValueError:
+                        except Exception:
                             continue
                         if newFormula not in formList:
                             continue
@@ -239,14 +239,11 @@ class TerminalScribe:
                             formula = newFormula
                             break
                 if formula == "sin" or formula == "sine":
-                    newScribe["Calc"] = "sin"
-                    #yummy = input(f"{name} will print a sin graph") testing
+                    newScribe["Calc"] = "sin" #will make sin graph
                 elif formula == "cos" or formula == "cosine":
-                    newScribe["Calc"] = "cos"
-                    #yummy = input(f"{name} will print a cos graph") testing
+                    newScribe["Calc"] = "cos" #will make cos graph
                 elif formula == "tan" or formula == "tangent":
-                    newScribe["Calc"] = "tan"
-                    #yummy = input(f"{name} will print a tan graph") testing                    
+                    newScribe["Calc"] = "tan" #will make tan graph               
             case _:
                 #asks for apology if shape is invalid
                 while True:
