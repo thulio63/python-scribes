@@ -51,9 +51,16 @@ class Canvas():
             #add [] inside print() for visible border
         
 class Format:
-    """Allows for different text formatting effects."""
+    """Allows for different text formatting effects when printed."""
     end = '\033[0m'
     underline = '\033[4m'
+    red = '\033[91m'
+    green = '\033[92m'
+    blue = '\033[94m'
+
+    def colorMark(markColor):
+        
+        pass
   
 class TerminalScribe:
 
@@ -73,6 +80,7 @@ class TerminalScribe:
         self.type = ""
         #myCanvas.clear()
 
+        #make interactive?
         self.name = ""
         self.mark = '*'
         self.trail = '.'      
@@ -253,34 +261,6 @@ class TerminalScribe:
             if drawing: 
                 commandName = input("\nThere is no scribe with such a name. Please name an existing scribe:\t")
                 continue
-        
-        
-
-    def summonScribe(name: str):
-        """Tells specified scribe to make its shape."""
-        #return print(scribesList)
-        #startPos = [myCanvas._x / 2, myCanvas._y / 2]
-        startPos = TerminalScribe.endingPos        
-        summoned = TerminalScribe(myCanvas) #edit into prev to choose canvas size
-        if (TerminalScribe.fresh): #trying to make lines start at center, failing
-            summoned.pos = [summoned.canvas._x / 2, summoned.canvas._y / 2]
-            TerminalScribe.fresh = False
-        size = 1
-        angle = 90
-        for i in TerminalScribe.scribesList: #sends scribes to work depending on name and function
-            if i["Name"] == name:
-                match i["Function"]:
-                    case "square":
-                        size = i["Size"]                        
-                        summoned.drawSquare(size, startPos)
-                    case "line":
-                        size = i["Size"]
-                        angle = i["Angle"]                    
-                        summoned.drawLine(size, angle, startPos)
-
-                    case "formula":
-                        purpose = i["Calc"]
-                        summoned.drawFunction(purpose)
 
 class LineScribe(TerminalScribe):
     def __init__(self, name: str, length: int, angle: int, currentPos: list = [0,0]):
