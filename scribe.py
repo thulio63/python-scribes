@@ -78,8 +78,8 @@ class TerminalScribe:
         self.trail = '.'      
 
     def _logEndPos(pos: list): #makes scribes follow from previous scribes
-        global endingPos 
-        endingPos = pos
+        #global endingPos 
+        TerminalScribe.endingPos = pos
 
     def _bonk(self, pos: list):
         """Makes the scribe bounce off of walls.""" 
@@ -234,12 +234,15 @@ class TerminalScribe:
 
     def sendScribe():
         drawing = True
-        commandName = input("\nWhich scribe would you like to summon?\t")
+        print("\nWhich scribe would you like to summon? The following scribes are currently ready to be summoned:")
+        for i in TerminalScribe.scribesList:
+            print(i.name)
+        commandName = input("")
         while drawing: 
             for i in TerminalScribe.scribesList:
                 if i.name == commandName:
                     if i.type == "line":
-                        i.draw(i.length, i.angle, i.pos)
+                        i.draw(i.length, i.angle, TerminalScribe.endingPos)
                         drawing = False       
                     elif i.type == "square":
                         i.draw(i.size, i.centered)
@@ -251,12 +254,13 @@ class TerminalScribe:
                 commandName = input("\nThere is no scribe with such a name. Please name an existing scribe:\t")
                 continue
         
+        
 
     def summonScribe(name: str):
         """Tells specified scribe to make its shape."""
         #return print(scribesList)
         #startPos = [myCanvas._x / 2, myCanvas._y / 2]
-        startPos = endingPos        
+        startPos = TerminalScribe.endingPos        
         summoned = TerminalScribe(myCanvas) #edit into prev to choose canvas size
         if (TerminalScribe.fresh): #trying to make lines start at center, failing
             summoned.pos = [summoned.canvas._x / 2, summoned.canvas._y / 2]
@@ -416,7 +420,6 @@ while choosing:
         case "summon" | "s":
             #choosing = False
             TerminalScribe.sendScribe()
-            print(endingPos)
             prompt = input(f"Would you like to {Format.underline}summon{Format.end} another scribe, {Format.underline}create{Format.end} a new scribe, or {Format.underline}quit{Format.end}?\n").lower()
             continue
         case "create" | "c":
