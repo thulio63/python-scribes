@@ -414,13 +414,13 @@ choosing = True
 while choosing:
     match prompt:
         case "summon" | "s":
-            choosing = False
+            #choosing = False
             TerminalScribe.sendScribe()
             print(endingPos)
             prompt = input(f"Would you like to {Format.underline}summon{Format.end} another scribe, {Format.underline}create{Format.end} a new scribe, or {Format.underline}quit{Format.end}?\n").lower()
             continue
         case "create" | "c":
-            choosing = False
+            #choosing = False
             TerminalScribe.createScribe()
             prompt = "summon"
             continue
