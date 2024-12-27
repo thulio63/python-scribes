@@ -1,6 +1,7 @@
 import time
 import os
 import math
+import operator
 
 class Canvas():
     checkSpots = []
@@ -220,7 +221,20 @@ class TerminalScribe:
                 buildMore = input(f"\nYou have created a scribe named {scribeName} that will draw a {scribeType} with {lineLen} unit long sides. Would you like to make more scribes?\n\t").lower()
 
             case "function" | "func":
-                pass
+                scribeType = "function"
+                buildFunc = True
+                while buildFunc:
+                    try:
+                        myFunc = input(f"\nWhat does y= in {scribeName}'s function?\t")
+                    except Exception: #IDK HOW TO TEST FOR THIS FUCK
+                        print("\nThat is not a valid length; please ensure your answer is an int.")
+                        continue
+                    else: break
+                #scribe is created and added to master list
+                scribe = FunctionScribe(scribeName, myFunc)
+                TerminalScribe.scribesList.append(scribe)
+
+                buildMore = input(f"\nYou have created a scribe named {scribeName} that will draw a {scribeType} where y = {myFunc}. Would you like to make more scribes?\n\t").lower()
             case _:
                 pass
             #fill out with drawing different shapes
@@ -256,7 +270,7 @@ class TerminalScribe:
                         i.draw(i.size, i.centered)
                         drawing = False 
                     elif i.type == "function":
-                        i.draw(i.size, i.centered)
+                        i.draw(i.function)
                         drawing = False 
             if drawing: 
                 commandName = input("\nThere is no scribe with such a name. Please name an existing scribe:\t")
@@ -335,25 +349,68 @@ class SquareScribe(TerminalScribe):
     object is created. On order to run, code <name>.draw(*args)"""
   
 class FunctionScribe(TerminalScribe):
-    def draw(self, identity: str):
-        self.pos = [0, int(self.canvas._y / 2)]
-        if identity == "sin":
-            self._drawSin()
-        elif identity == "cos":
-            self._drawCos()
-        elif identity == "tan":
-            self._drawTan()
-
-    def _drawSin(self):
-        self.canvas.setPos(self.pos, self.mark)
+    def __init__(self, name: str, function):
+        super().__init__(myCanvas)
+        self.name = name
+        self.pos = []
+        self.type = "function"
+        self.function = function
+        
+           
+    def draw(self, function):
         yVar = int(self.canvas._y / 2)
+        #calculate x and y coordinates in for loop
         for i in range(self.canvas._x):
-            self.canvas.setPos(self.pos, self.trail)        
-            self.pos = [i, math.sin(i) * (yVar / math.pi) + yVar]
+            if self.pos is not []: #ignores on first calc, then displays afterwards
+                self.canvas.setPos(self.pos, self.trail)   
+            yVal = self.calculate(i, function)     
+            self.pos = [i, yVal]
             self.canvas.setPos(self.pos, self.mark) 
             self.canvas.print()
             time.sleep(self.framerate)
         self._clearMark()
+        
+
+    def calculate(self, calcX: int, function: str): #doesn't do trig or pi
+        #operators that can be parsed
+        ops = {
+            '+' : operator.add,
+            '-' : operator.sub,
+            '*' : operator.mul,
+            '/' : operator.truediv,
+            '%' : operator.mod,
+            '**': operator.pow
+               }
+        
+        errors = []
+        x = calcX
+        list = function.split()
+        addList = []
+
+        #turns x into int
+        for i in range(len(list)): 
+            if list[i] == "x":
+                list[i] = x
+
+        #turns int strings to ints
+        for INT in range(len(list)):
+            try: list[INT] = int(list[INT])
+            except: errors.append(f"{INT} is not an INT")
+
+        #turn operators into ops
+        for OP in range(len(list)):
+            if list[OP] in ops: list[OP] = ops[list[OP]]
+
+        it = 0
+        iterations = int((len(list) - 1) / 2)
+        while it < iterations:
+            addList.append(list[1](list[0], list[2]))
+            list.pop(0)
+            list.pop(0)
+            list[0] = addList[it]
+            it += 1
+
+        return addList[-1]
 
     def _drawCos(self):
         self.canvas.setPos(self.pos, self.mark)
@@ -418,4 +475,4 @@ while choosing:
 
     
 
-print(Canvas.checkSpots)
+if len(Canvas.checkSpots) is not 0: print(Canvas.checkSpots)
