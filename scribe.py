@@ -15,11 +15,19 @@ class Canvas():
     def setPos(self, pos, mark):
         try:
             self._canvas[round(pos[0])][round(pos[1])] = mark
+        except Exception as e:
+            raise ScribeException(f'Could not set position to {pos}')
         except:
             #check = input(f"{pos} is out of bounds. Do you understand?")
-            
             self.checkSpots.append(pos)
             #self._canvas[math.floor(pos[0])][math.floor(pos[1])] = mark
+
+    def isNumber(val):
+        try:
+            float(val)
+            return True
+        except ValueError:
+            return False
 
     def bonk(self, pos: list, dir:list): #needs rethinking
         returns = [1, 1]
@@ -59,10 +67,19 @@ class Format:
     green = '\033[92m'
     blue = '\033[94m'
 
-    def colorMark(markColor):
+    def colorMark(markColor): #add parameter for color, return {color}{text}{end}
         
         pass
   
+# Maybe replace some (invalid input) spots with errors? Maybe both?
+# idk man not used to this yet
+class ScribeException(Exception):
+    def __init__(self, message =''):
+        super().__init__(f"{Format.red}{message}{Format.end}")
+
+class InvalidParameter(ScribeException):
+    pass
+
 class TerminalScribe:
 
     fresh = True
@@ -70,21 +87,33 @@ class TerminalScribe:
     shapes = "line", "square", "function", "ln", "sq", "func"
     endingPos = [0,0]
 
-    def __init__(self, canvas: Canvas):
+    def __init__(self, canvas: Canvas, name ="", mark ='*', trail ='.', framerate =.05):
+        if not issubclass(type(canvas), Canvas):
+            raise InvalidParameter('Your canvas must be a Canvas object')
         self.canvas = canvas
         self.pos = [0, 0] #start in top left
         #self.pos = [(self.canvas._x / 2), self.canvas._y / 2] #start in center
         
-        self.framerate = 0.05
+        
         self.direction = [0.0, 0.0]
         self.willBonk = True
         self.type = ""
         #myCanvas.clear()
 
-        #make interactive?
-        self.name = ""
-        self.mark = '*'
-        self.trail = '.'      
+        if type(name) != str:
+            raise InvalidParameter('Name must be a string')
+        self.name = name
+        if len(str(mark)) != 1:
+            raise InvalidParameter('Mark must be a single character')
+        self.mark = str(mark)
+        if len(str(trail)) != 1:
+            raise InvalidParameter('Trail must be a single character')
+        if trail == mark:
+            raise InvalidParameter('Trail must be different from mark')
+        self.trail = str(trail)   
+        if not Canvas.isNumber(framerate):
+            raise InvalidParameter('Framerate must be a number')
+        self.framerate = framerate
 
     def _logEndPos(pos: list): #makes scribes follow from previous scribes
         #global endingPos 
@@ -175,6 +204,7 @@ class TerminalScribe:
                 
                 #scribe is created and added to master list
                 scribe = LineScribe(scribeName, lineLen, lineAng)
+                #scribe = LineScribe(scribeName, lineLen, lineAng)
                 TerminalScribe.scribesList.append(scribe)
 
                 buildMore = input(f"\nYou have created a scribe named {scribeName} that will draw a {lineAng} degree {scribeType}. Would you like to make more scribes?\n\t").lower()
@@ -276,7 +306,7 @@ class TerminalScribe:
                 commandName = input("\nThere is no scribe with such a name. Please name an existing scribe:\t")
                 continue
 
-class LineScribe(TerminalScribe):
+class LineScribe(TerminalScribe): #add params for framerate, mark, trail, etc?
     def __init__(self, name: str, length: int, angle: int, currentPos: list = [0,0]):
         super().__init__(myCanvas)
         self.name = name
@@ -296,7 +326,7 @@ class LineScribe(TerminalScribe):
         TerminalScribe._logEndPos(self.pos)
         self._clearMark()    
 
-class SquareScribe(TerminalScribe):
+class SquareScribe(TerminalScribe): #add params for framerate, mark, trail, etc?
     def __init__(self, name: str, size: int, centered: bool = True, currentPos: list = [0,0]):
         super().__init__(myCanvas)
         self.name = name
@@ -348,7 +378,7 @@ class SquareScribe(TerminalScribe):
     """In interactive mode, user creates scribe. new <name> SquareScribe 
     object is created. On order to run, code <name>.draw(*args)"""
   
-class FunctionScribe(TerminalScribe):
+class FunctionScribe(TerminalScribe): #add params for framerate, mark, trail, etc?
     def __init__(self, name: str, function):
         super().__init__(myCanvas)
         self.name = name
