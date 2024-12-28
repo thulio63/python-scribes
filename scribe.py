@@ -3,14 +3,19 @@ import os
 import math
 import operator
 
-class Canvas():
+class Canvas(): #framerate is overly slow - maybe has something to do with scribes referencing canvas instead of themselves? not sure
     checkSpots = []
+    scribesList = []
+    shapes = "line", "square", "function", "ln", "sq", "func"
 
-    def __init__(self, width, height):
+    def __init__(self, width, height, framerate =0.5):
         """Initialize the canvas."""
         self._x = width
         self._y = height
         self._canvas = [[' ' for y in range(self._y)] for x in range(self._x)]
+        if not Canvas.isNumber(framerate):
+            raise InvalidParameter('Framerate must be a number')
+        self.framerate = framerate
 
     def setPos(self, pos, mark):
         try:
@@ -83,11 +88,11 @@ class InvalidParameter(ScribeException):
 class TerminalScribe:
 
     fresh = True
-    scribesList = []
-    shapes = "line", "square", "function", "ln", "sq", "func"
-    endingPos = [0,0]
+    
+    
+    endingPos = [0,0] #are multiple concurrent scribes gonna fuck this up? maybe for different length scribes?
 
-    def __init__(self, canvas: Canvas, name ="", mark ='*', trail ='.', framerate =.05):
+    def __init__(self, canvas: Canvas, name ="", mark ='*', trail ='.'):
         if not issubclass(type(canvas), Canvas):
             raise InvalidParameter('Your canvas must be a Canvas object')
         self.canvas = canvas
@@ -111,9 +116,7 @@ class TerminalScribe:
         if trail == mark:
             raise InvalidParameter('Trail must be different from mark')
         self.trail = str(trail)   
-        if not Canvas.isNumber(framerate):
-            raise InvalidParameter('Framerate must be a number')
-        self.framerate = framerate
+        
 
     def _logEndPos(pos: list): #makes scribes follow from previous scribes
         #global endingPos 
@@ -144,7 +147,7 @@ class TerminalScribe:
             self.pos = [self.pos[0] + self.direction[0], self.pos[1] + self.direction[1]]           
             self.canvas.setPos(self.pos, self.mark)
             self.canvas.print()
-            time.sleep(self.framerate)
+            time.sleep(myCanvas.framerate)
 
     def _clearMark(self):
         self.canvas.setPos(self.pos, self.trail)
@@ -152,27 +155,31 @@ class TerminalScribe:
 
     def createScribe():
         """Adding a scribe to a master list."""
-        if len(TerminalScribe.scribesList) == 0:
+        if len(Canvas.scribesList) == 0:
             scribeName = input("\nWhat would you like to name your first scribe?\n")
         else: scribeName = input("\nWhat would you like to name this scribe?\n")
+        scribeName = scribeName.strip()
         naming = True
         while naming:
-            if len(TerminalScribe.scribesList) == 0:
+            if len(Canvas.scribesList) == 0:
                 naming = False
-            for i in TerminalScribe.scribesList:
+            for i in Canvas.scribesList:
                 #add .lower() after both to ignore cases in name matching
                 if i.name == scribeName:
                     #if this name has already been added
                     scribeName = input("\nThere is already a scribe with this name! Choose another:\n")
+                    scribeName = scribeName.strip()
                     continue
                 else: 
                     naming = False
 
-        scribeType = input(f"\nWhat would you like {scribeName} to draw? \nFor now, choose between a line, a square, or a function.\n").lower()
+        scribeType = input(f"\nWhat would you like {scribeName} to draw? \nFor now, choose between a line, a square, or a function.\n\n").lower()
+        scribeType = scribeType.strip()
         shaping = True
         while shaping:
-            if scribeType not in TerminalScribe.shapes:
-                scribeType = input("\nThat is not a valid shape; please choose one of the listed options.\n")
+            if scribeType not in Canvas.shapes:
+                scribeType = input("\nThat is not a valid shape; please choose one of the listed options.\n").lower()
+                scribeType = scribeType.strip()
                 continue
     
             else: 
@@ -204,10 +211,10 @@ class TerminalScribe:
                 
                 #scribe is created and added to master list
                 scribe = LineScribe(scribeName, lineLen, lineAng)
-                #scribe = LineScribe(scribeName, lineLen, lineAng)
-                TerminalScribe.scribesList.append(scribe)
+                Canvas.scribesList.append(scribe)
 
-                buildMore = input(f"\nYou have created a scribe named {scribeName} that will draw a {lineAng} degree {scribeType}. Would you like to make more scribes?\n\t").lower()
+                buildMore = input(f"\nYou have created a scribe named {scribeName} that will draw a {lineAng} degree {scribeType}. Would you like to make another scribe?\n\t").lower()
+                buildMore = buildMore.strip()
 
             case "square" | "sq":
                 scribeType = "square"
@@ -229,6 +236,7 @@ class TerminalScribe:
                     else: break
                 #checks if square should be centered
                 isCentered = input(f"Should {scribeName} be centered on the canvas?\t").lower()
+                isCentered = isCentered.strip()
                 ansCent = True
                 while ansCent:
                     match isCentered:
@@ -242,13 +250,15 @@ class TerminalScribe:
                             break
                         case _:
                             isCentered = input("Please answer yes or no:\n\t").lower()
+                            isCentered = isCentered.strip()
                             continue
                 #scribe is created and added to master list
                 scribe = SquareScribe(scribeName, lineLen, _centered)
-                TerminalScribe.scribesList.append(scribe)
+                Canvas.scribesList.append(scribe)
 
                 #perhaps indicate if square is centered?
-                buildMore = input(f"\nYou have created a scribe named {scribeName} that will draw a {scribeType} with {lineLen} unit long sides. Would you like to make more scribes?\n\t").lower()
+                buildMore = input(f"\nYou have created a scribe named {scribeName} that will draw a {scribeType} with {lineLen} unit long sides. Would you like to make another scribe?\n\t").lower()
+                buildMore = buildMore.strip()
 
             case "function" | "func":
                 scribeType = "function"
@@ -256,15 +266,21 @@ class TerminalScribe:
                 while buildFunc:
                     try:
                         myFunc = input(f"\nWhat does y= in {scribeName}'s function?\t")
+                        myFunc = myFunc.strip()
                     except Exception: #IDK HOW TO TEST FOR THIS FUCK
+                                      #maybe look for strings besides x or operands buddy
                         print("\nThat is not a valid length; please ensure your answer is an int.")
+                        #new input to try again
+                        myFunc = input(f"\nWhat does y= in {scribeName}'s function?\t")
+                        myFunc = myFunc.strip()
                         continue
                     else: break
                 #scribe is created and added to master list
                 scribe = FunctionScribe(scribeName, myFunc)
-                TerminalScribe.scribesList.append(scribe)
+                Canvas.scribesList.append(scribe)
 
-                buildMore = input(f"\nYou have created a scribe named {scribeName} that will draw a {scribeType} where y = {myFunc}. Would you like to make more scribes?\n\t").lower()
+                buildMore = input(f"\nYou have created a scribe named {scribeName} that will draw a {scribeType} where y = {myFunc}. Would you like to make another scribe?\n\t").lower()
+                buildMore = buildMore.strip()
             case _:
                 pass
             #fill out with drawing different shapes
@@ -272,7 +288,7 @@ class TerminalScribe:
         #asks to continue, catches anything but yes or no
         ansBuild = True
         while ansBuild:
-            match buildMore:
+            match buildMore: #slice any spaces off the end maybe?
                 case "y" | "yes":
                     ansBuild = False
                     TerminalScribe.createScribe()
@@ -282,16 +298,18 @@ class TerminalScribe:
                     break
                 case _:
                     buildMore = input("Please answer yes or no:\n\t").lower()
+                    buildMore = buildMore.strip()
                     continue
 
     def sendScribe():
         drawing = True
         print("\nWhich scribe would you like to summon? The following scribes are currently ready to be summoned:")
-        for i in TerminalScribe.scribesList:
+        for i in Canvas.scribesList:
             print(i.name)
-        commandName = input("")
+        commandName = input("\n")
+        commandName = commandName.strip()
         while drawing: 
-            for i in TerminalScribe.scribesList:
+            for i in Canvas.scribesList:
                 if i.name == commandName:
                     if i.type == "line":
                         i.draw(i.length, i.angle, TerminalScribe.endingPos)
@@ -304,9 +322,10 @@ class TerminalScribe:
                         drawing = False 
             if drawing: 
                 commandName = input("\nThere is no scribe with such a name. Please name an existing scribe:\t")
+                commandName = commandName.strip()
                 continue
 
-class LineScribe(TerminalScribe): #add params for framerate, mark, trail, etc?
+class LineScribe(TerminalScribe): #add params for mark, trail, etc?
     def __init__(self, name: str, length: int, angle: int, currentPos: list = [0,0]):
         super().__init__(myCanvas)
         self.name = name
@@ -326,7 +345,7 @@ class LineScribe(TerminalScribe): #add params for framerate, mark, trail, etc?
         TerminalScribe._logEndPos(self.pos)
         self._clearMark()    
 
-class SquareScribe(TerminalScribe): #add params for framerate, mark, trail, etc?
+class SquareScribe(TerminalScribe): #add params for mark, trail, etc?
     def __init__(self, name: str, size: int, centered: bool = True, currentPos: list = [0,0]):
         super().__init__(myCanvas)
         self.name = name
@@ -378,7 +397,7 @@ class SquareScribe(TerminalScribe): #add params for framerate, mark, trail, etc?
     """In interactive mode, user creates scribe. new <name> SquareScribe 
     object is created. On order to run, code <name>.draw(*args)"""
   
-class FunctionScribe(TerminalScribe): #add params for framerate, mark, trail, etc?
+class FunctionScribe(TerminalScribe): #add params for mark, trail, etc?
     def __init__(self, name: str, function):
         super().__init__(myCanvas)
         self.name = name
@@ -391,13 +410,13 @@ class FunctionScribe(TerminalScribe): #add params for framerate, mark, trail, et
         yVar = int(self.canvas._y / 2)
         #calculate x and y coordinates in for loop
         for i in range(self.canvas._x):
-            if self.pos is not []: #ignores on first calc, then displays afterwards
+            if len(self.pos) != 2: #ignores on first calc, then displays afterwards
                 self.canvas.setPos(self.pos, self.trail)   
             yVal = self.calculate(i, function)     
             self.pos = [i, yVal]
             self.canvas.setPos(self.pos, self.mark) 
             self.canvas.print()
-            time.sleep(self.framerate)
+            time.sleep(self.canvas.framerate)
         self._clearMark()
         
 
@@ -450,7 +469,7 @@ class FunctionScribe(TerminalScribe): #add params for framerate, mark, trail, et
             self.pos = [i, math.cos(i) * (yVar / math.pi) + yVar]
             self.canvas.setPos(self.pos, self.mark) 
             self.canvas.print()
-            time.sleep(self.framerate)
+            time.sleep(self.canvas.framerate)
         self._clearMark()
 
     def _drawTan(self):
@@ -465,13 +484,13 @@ class FunctionScribe(TerminalScribe): #add params for framerate, mark, trail, et
                 self.pos[1] = 0
             self.canvas.setPos(self.pos, self.mark) 
             self.canvas.print()
-            time.sleep(self.framerate)
+            time.sleep(self.canvas.framerate)
         self._clearMark()
 
 #begins program with user input
 
 #make canvas first!
-myCanvas = Canvas(20, 20) #make input
+myCanvas = Canvas(30, 30, 0.4) #make input
 
 #greeting
 print("Welcome! Let's make some scribes together :)")
@@ -481,6 +500,7 @@ TerminalScribe.createScribe()
 TerminalScribe.sendScribe()
 
 prompt = input(f"Would you like to {Format.underline}summon{Format.end} another scribe, {Format.underline}create{Format.end} a new scribe, or {Format.underline}quit{Format.end}?\n").lower()
+prompt = prompt.strip()
 choosing = True
 while choosing:
     match prompt:
@@ -488,6 +508,7 @@ while choosing:
             #choosing = False
             TerminalScribe.sendScribe()
             prompt = input(f"Would you like to {Format.underline}summon{Format.end} another scribe, {Format.underline}create{Format.end} a new scribe, or {Format.underline}quit{Format.end}?\n").lower()
+            prompt = prompt.strip()
             continue
         case "create" | "c":
             #choosing = False
@@ -500,9 +521,10 @@ while choosing:
             break
         case _:
             prompt = input(f"That is not a valid response. You can {Format.underline}summon{Format.end}, {Format.underline}create{Format.end}, or {Format.underline}quit{Format.end}.\n").lower()
+            prompt = prompt.strip()
             continue
     #fill match case to redirect
 
     
 
-if len(Canvas.checkSpots) is not 0: print(Canvas.checkSpots)
+if len(Canvas.checkSpots) != 0: print(Canvas.checkSpots)
